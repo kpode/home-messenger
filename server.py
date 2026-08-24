@@ -54,15 +54,33 @@ def home(error=""):
                 margin-bottom: 20px;
             }}
 
+            select {{
+                width: 90%;
+                padding: 15px;
+                margin-bottom: 15px;
+                font-size: 20px;
+            }}
+
     </style>
     <div class="container">
         <h1>Home Messenger</h1>
         <p class="status">{error}</p>
 
         <form action="/send" method="POST">
-            <textarea name="message" placeholder="Type your message..."></textarea>
+            <select name="sender">
+                <option value="">Who is sending?</option>
+                <option value="Daddy">Daddy</option>
+                <option value="Mummy">Mummy</option>
+            </select>
+        
+            <textarea 
+                name="message" 
+                placeholder="Type your message..."
+            ></textarea>
+            
             <button type="submit">Send Message</button>
         </form>
+
     </div>
     """
 
@@ -70,11 +88,16 @@ def home(error=""):
 @app.route("/send", methods=["POST"])
 def send():
     message = request.form.get("message")
+    sender = request.form.get("sender")
+    print(sender, message)
+
+    if not sender:
+        return home("Please select who is sending")
 
     if not message:
         return home("Message cannot be empty")
 
-    message_queue.put(message)    
+    message_queue.put((sender, message))
     return home("Message received")
 
 

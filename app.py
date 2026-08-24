@@ -9,8 +9,8 @@ from display import show_message
 
 def check_queue():
         try:
-            new_message = message_queue.get_nowait()
-            show_message(root, new_message)
+            sender, new_message = message_queue.get_nowait()
+            show_message(root, sender, new_message)
         except queue.Empty:
             pass
 

@@ -1,4 +1,7 @@
 import tkinter as tk
+import os
+import platform
+import subprocess
 
 active_window = None
 active_label = None
@@ -15,8 +18,10 @@ def close_message():
     close_timer = None
 
 
-def show_message(root, user_message):
+def show_message(root, sender, user_message):
     global active_window, active_label, close_timer
+
+    play_alert()
 
     if active_window is None:
         active_window = tk.Toplevel(root)
@@ -25,7 +30,7 @@ def show_message(root, user_message):
 
         active_label = tk.Label(
             active_window,
-            text=user_message,
+            text=f"NEW MESSAGE FROM {sender.upper()}:\n\n{user_message}",
             font=("Arial", 40, "bold"),
             bg="black",
             fg="white",
@@ -47,4 +52,22 @@ def show_message(root, user_message):
         active_window.after_cancel(close_timer)
 
     close_timer = active_window.after(10000, close_message)
-        
+
+def play_alert():
+    sound_path = os.path.join(
+        os.path.dirname(__file__),
+        "assets",
+        "notification.mp3"
+    )
+
+    system = platform.system()
+
+    if system == "Darwin":
+        subprocess.Popen(["afplay", sound_path])
+
+    elif system == "Linux":
+        subprocess.Popen(["paplay", sound_path])
+
+    elif system == "Windows":
+        import winsound
+        winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
